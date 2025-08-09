@@ -1,0 +1,16 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/davidm/Android studio projects/Megaverse/data/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest7990544301233439768.xml:2:13-83
+INJECTED from /Users/davidm/Android studio projects/Megaverse/data/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest7990544301233439768.xml:2:13-83
+	package
+		INJECTED from /Users/davidm/Android studio projects/Megaverse/data/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest7990544301233439768.xml
+	xmlns:android
+		ADDED from /Users/davidm/Android studio projects/Megaverse/data/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest7990544301233439768.xml:2:23-81
+uses-sdk
+INJECTED from /Users/davidm/Android studio projects/Megaverse/data/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest7990544301233439768.xml reason: use-sdk injection requested
+INJECTED from /Users/davidm/Android studio projects/Megaverse/data/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest7990544301233439768.xml
+INJECTED from /Users/davidm/Android studio projects/Megaverse/data/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest7990544301233439768.xml
+	android:targetSdkVersion
+		INJECTED from /Users/davidm/Android studio projects/Megaverse/data/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest7990544301233439768.xml
+	android:minSdkVersion
+		INJECTED from /Users/davidm/Android studio projects/Megaverse/data/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest7990544301233439768.xml

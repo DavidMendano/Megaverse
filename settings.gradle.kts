@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Megaverse"
 include(":app")
- 
+include(":domain")
+include(":data")

@@ -24,6 +24,7 @@ class SafeApiCallDelegateImpl : SafeApiCallDelegate {
                 Result.success(result)
             }
         } catch (e: Exception) {
+            e.printStackTrace()
             Result.failure(e)
         }
 }

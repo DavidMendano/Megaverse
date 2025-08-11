@@ -78,8 +78,8 @@ private fun MainContent(
     showLoader: Boolean,
     onCreateMapClicked: () -> Unit,
     onClearClicked: () -> Unit,
-    row: Int,
-    column: Int,
+    row: String,
+    column: String,
     onRowChanged: (String) -> Unit,
     onColumnChanged: (String) -> Unit,
     selectedType: MegaverseOptions,
@@ -134,8 +134,8 @@ private fun ClearButton(
 
 @Composable
 private fun InputRowAndColumn(
-    row: Int,
-    column: Int,
+    row: String,
+    column: String,
     onRowChanged: (String) -> Unit,
     onColumnChanged: (String) -> Unit
 ) {
@@ -221,8 +221,8 @@ private fun MainPreview() {
             showLoader = false,
             onCreateMapClicked = {},
             onClearClicked = {},
-            row = 1,
-            column = 1,
+            row = "1",
+            column = "1",
             onRowChanged = {},
             onColumnChanged = {},
             selectedType = MegaverseOptions.POLYANET,

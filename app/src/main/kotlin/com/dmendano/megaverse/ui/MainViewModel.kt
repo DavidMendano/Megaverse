@@ -12,7 +12,6 @@ import com.dmendano.domain.usecase.DeleteMegaverseObjectUseCase
 import com.dmendano.domain.usecase.GetGoalUseCase
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -39,30 +38,32 @@ class MainViewModel(
 
     fun executeClear() {
         viewModelScope.launch {
-            if (_screenState.value.row < 0 || _screenState.value.column < 0) {
+            val row = _screenState.value.row.toIntOrNull() ?: -1
+            val column = _screenState.value.column.toIntOrNull() ?: -1
+            if (row < 0 || column < 0) {
                 showErrorMessage(errorMessage = "Row and column must be greater or equal than 0")
                 return@launch
+            } else {
+                showLoader()
+                deleteMegaverseObjectUseCase(
+                    row = row,
+                    column = column,
+                    megaverseOption = _screenState.value.selectedOption
+                )
+                hideLoader()
             }
-
-            showLoader()
-            deleteMegaverseObjectUseCase(
-                row = _screenState.value.row,
-                column = _screenState.value.column,
-                megaverseOption = _screenState.value.selectedOption
-            )
-            hideLoader()
         }
     }
 
     fun onRowChanged(row: String) {
         _screenState.update {
-            it.copy(row = row.toIntOrNull() ?: 0)
+            it.copy(row = row)
         }
     }
 
     fun onColumnChanged(column: String) {
         _screenState.update {
-            it.copy(column = column.toIntOrNull() ?: 0)
+            it.copy(column = column)
         }
     }
 
@@ -93,10 +94,8 @@ class MainViewModel(
                         async {
                             createMegaverseObject(megaverseObject)
                                 .onFailure { showErrorMessage(errorMessage = it.message) }
-                            delay(300)
                         }
                     }.awaitAll()
-                    delay(3000)
                 }
             hideLoader()
         }
@@ -124,8 +123,8 @@ class MainViewModel(
 
     data class MainScreenState(
         val showLoader: Boolean = false,
-        val row: Int = 0,
-        val column: Int = 0,
+        val row: String = "",
+        val column: String = "",
         val selectedOption: MegaverseOptions = MegaverseOptions.POLYANET,
         val errorMessage: String? = null
     )

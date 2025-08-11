@@ -1,6 +1,5 @@
 package com.dmendano.megaverse.ui
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dmendano.domain.model.GoalDTO
@@ -16,6 +15,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MainViewModel(
@@ -26,8 +26,8 @@ class MainViewModel(
     private val deleteMegaverseObjectUseCase: DeleteMegaverseObjectUseCase,
 ) : ViewModel() {
 
-    private val _showLoader = MutableStateFlow(false)
-    val showLoader = _showLoader.asStateFlow()
+    private val _screenState = MutableStateFlow<MainScreenState>(MainScreenState())
+    val screenState = _screenState.asStateFlow()
 
     private val batchSize = 3
 
@@ -39,9 +39,36 @@ class MainViewModel(
 
     fun executeClear() {
         viewModelScope.launch {
+            if (_screenState.value.row < 0 || _screenState.value.column < 0) {
+                showErrorMessage(errorMessage = "Row and column must be greater or equal than 0")
+                return@launch
+            }
+
             showLoader()
-            deleteMegaverseObjectUseCase(1, 1, MegaverseOptions.POLYANET)
+            deleteMegaverseObjectUseCase(
+                row = _screenState.value.row,
+                column = _screenState.value.column,
+                megaverseOption = _screenState.value.selectedOption
+            )
             hideLoader()
+        }
+    }
+
+    fun onRowChanged(row: String) {
+        _screenState.update {
+            it.copy(row = row.toIntOrNull() ?: 0)
+        }
+    }
+
+    fun onColumnChanged(column: String) {
+        _screenState.update {
+            it.copy(column = column.toIntOrNull() ?: 0)
+        }
+    }
+
+    fun onObjectTypeSelected(type: MegaverseOptions) {
+        _screenState.update {
+            it.copy(selectedOption = type)
         }
     }
 
@@ -50,7 +77,7 @@ class MainViewModel(
         getGoalUseCase()
             .onSuccess { onCompleted(it) }
             .onFailure {
-                Log.e("*****", it.message ?: "Unknown error")
+                showErrorMessage(it.message ?: "Error")
                 hideLoader()
             }
     }
@@ -65,6 +92,7 @@ class MainViewModel(
                     batch.map { megaverseObject ->
                         async {
                             createMegaverseObject(megaverseObject)
+                                .onFailure { showErrorMessage(errorMessage = it.message) }
                             delay(300)
                         }
                     }.awaitAll()
@@ -74,20 +102,31 @@ class MainViewModel(
         }
     }
 
-    private suspend fun createMegaverseObject(megaverseObject: MegaverseObjectDTO) {
+    private suspend fun createMegaverseObject(megaverseObject: MegaverseObjectDTO): Result<Unit> =
         when (megaverseObject) {
             is MegaverseObjectDTO.Cometh -> createComethUseCase(megaverseObject)
             is MegaverseObjectDTO.Soloon -> createSoloonUseCase(megaverseObject)
             is MegaverseObjectDTO.Polyanet -> createPolyanetUseCase(megaverseObject)
-            else -> Unit // Do nothing
+            else -> Result.failure(IllegalArgumentException("Invalid megaverse object"))
         }
-    }
 
     private fun showLoader() {
-        _showLoader.value = true
+        _screenState.update { it.copy(showLoader = true, errorMessage = null) }
     }
 
     private fun hideLoader() {
-        _showLoader.value = false
+        _screenState.update { it.copy(showLoader = false) }
     }
+
+    private fun showErrorMessage(errorMessage: String?) {
+        _screenState.update { it.copy(errorMessage = errorMessage) }
+    }
+
+    data class MainScreenState(
+        val showLoader: Boolean = false,
+        val row: Int = 0,
+        val column: Int = 0,
+        val selectedOption: MegaverseOptions = MegaverseOptions.POLYANET,
+        val errorMessage: String? = null
+    )
 }

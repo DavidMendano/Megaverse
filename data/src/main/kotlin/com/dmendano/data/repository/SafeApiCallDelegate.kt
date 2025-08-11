@@ -3,6 +3,7 @@ package com.dmendano.data.repository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 
 interface SafeApiCallDelegate {
 
@@ -24,7 +25,11 @@ class SafeApiCallDelegateImpl : SafeApiCallDelegate {
                 Result.success(result)
             }
         } catch (e: Exception) {
-            e.printStackTrace()
-            Result.failure(e)
+            if (e is HttpException && e.code() == 429) {
+                Result.failure(Exception("Too many requests"))
+            } else {
+                e.printStackTrace()
+                Result.failure(Exception("Connection error"))
+            }
         }
 }
